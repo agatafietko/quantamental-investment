@@ -1,0 +1,113 @@
+/*!*************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./app/globals.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************/
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --background-rgb: 5, 5, 5;
+  /* Deep Void Black */
+  --foreground-rgb: 255, 255, 255;
+
+  /* Cyber-Industrial Palette */
+  --cyber-black: #050505;
+  --cyber-blue: #2f58cd;
+  --cyber-amber: #ffbd00;
+  --cyber-grid: rgba(47, 88, 205, 0.1);
+
+  --primary-glow: radial-gradient(rgba(47, 88, 205, 0.3), rgba(0, 0, 0, 0));
+
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-bg: rgba(10, 10, 12, 0.6);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+
+  --accent-cyan: #00f2ea;
+  --accent-purple: #b000ff;
+  --accent-green: #39ff14;
+  --danger-red: #ff3a3a;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: var(--cyber-black);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Headings use Space Grotesk for that technical feel */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* Cyber Grid Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background-image:
+    linear-gradient(var(--cyber-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--cyber-grid) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 100%);
+          mask-image: radial-gradient(circle at 50% 50%, black 40%, transparent 100%);
+}
+
+/* Holographic Card Utility */
+.holographic-card {
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(12px);
+          backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.holographic-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.05),
+      transparent);
+  transform: skewX(-25deg);
+  transition: 0.5s;
+}
+
+.holographic-card:hover::after {
+  left: 100%;
+  transition: 0.7s ease-in-out;
+}
+
+.holographic-card:hover {
+  border-color: var(--cyber-blue);
+  box-shadow: 0 0 20px rgba(47, 88, 205, 0.2);
+}
+
+/* Text Utilities */
+.text-cyber {
+  color: var(--cyber-amber);
+  text-shadow: 0 0 10px rgba(255, 189, 0, 0.3);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #fff 30%, rgba(255, 255, 255, 0.7) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

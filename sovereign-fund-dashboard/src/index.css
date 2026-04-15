@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ivory: #FAF9F5;
+  --color-ivory-low: #F4F4F0;
+  --color-ivory-high: #E3E2DF;
+  --color-ink: #000613;
+  --color-ink-light: #001F3F;
+  --color-gold: #D4AF37;
+  --color-gold-dark: #735C00;
+  --color-outline-variant: #c4c6cf;
+
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+  --radius-full: 0px;
+
+  --font-serif: "Newsreader", serif;
+  --font-sans: "Work Sans", sans-serif;
+  
+  --shadow-ambient: 0 0 32px rgba(0, 31, 63, 0.06);
+}
+
+@layer base {
+  @import url('https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,200..800&family=Work+Sans:wght@300..700&display=swap');
+
+  html, body, #root {
+    @apply bg-ivory text-ink font-serif h-full w-full m-0 p-0;
+  }
+}
+
+@layer utilities {
+  .bg-gradient-ink {
+    background: linear-gradient(105deg, var(--color-ink-light) 0%, var(--color-ink) 100%);
+  }
+}

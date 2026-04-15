@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Hedge Fund Positioning Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-millennium: #38bdf8; /* light blue */
+            --accent-bridgewater: #facc15; /* yellow */
+            --accent-renaissance: #fb7185; /* rose */
+            --border-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(251, 113, 133, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            box-sizing: border-box;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            font-size: 2.2rem;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .grid-top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+            backdrop-filter: blur(12px);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            font-size: 1.15rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            color: var(--text-main);
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h2::before {
+            content: '';
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            margin-right: 12px;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 380px;
+            width: 100%;
+        }
+
+        .panel-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .panel-group {
+            margin-bottom: 32px;
+        }
+        
+        .panel-group h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .panel-item {
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 3px solid #64748b;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            transition: background 0.2s;
+        }
+        
+        .panel-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .crowded .panel-item { border-left-color: #10b981; }
+        
+        .divergent .panel-item strong { display: block; margin-bottom: 4px; font-weight: 600; }
+        .divergent .panel-item:nth-child(1) { border-left-color: var(--accent-bridgewater); }
+        .divergent .panel-item:nth-child(2) { border-left-color: var(--accent-millennium); }
+        .divergent .panel-item:nth-child(3) { border-left-color: var(--accent-renaissance); }
+
+        .grid-bottom {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .agent-card {
+            background: linear-gradient(180deg, var(--card-bg) 0%, rgba(15, 23, 42, 0) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 28px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px -10px rgba(0,0,0,0.6);
+        }
+
+        .agent-card.millennium::before { background: var(--accent-millennium); box-shadow: 0 0 15px var(--accent-millennium); }
+        .agent-card.bridgewater::before { background: var(--accent-bridgewater); box-shadow: 0 0 15px var(--accent-bridgewater); }
+        .agent-card.renaissance::before { background: var(--accent-renaissance); box-shadow: 0 0 15px var(--accent-renaissance); }
+
+        .agent-title {
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .agent-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .holdings-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .holdings-list li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            line-height: 1.4;
+        }
+
+        .holdings-list li::before {
+            content: '▫';
+            position: absolute;
+            left: 4px;
+            top: 0;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            line-height: 1;
+        }
+
+        canvas {
+            filter: drop-shadow(0 0 20px rgba(0,0,0,0.2));
+        }
+
+        @media (max-width: 900px) {
+            .grid-top { grid-template-columns: 1fr; }
+            .grid-bottom { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Multi-Agent Hedge Fund Positioning Dashboard <br><span style="font-size: 0.5em; color: var(--text-muted); letter-spacing: 2px;">INFLATION SHOCK SCENARIO</span></h1>
+        
+        <div class="grid-top">
+            <!-- Radar Chart Panel -->
+            <div class="card">
+                <h2>Behavioral DNA Geometry</h2>
+                <div class="chart-container">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Copy-Cat Alpha Module Panel -->
+            <div class="card" style="box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);">
+                <h2>Copy-Cat Alpha Module</h2>
+                
+                <div class="panel-group crowded">
+                    <h3 style="color: #10b981;">Crowded Longs (Multiple Agents Agree)</h3>
+                    <ul class="panel-list">
+                        <li class="panel-item"><strong>Long Energy / Commodities</strong><br><span style="color: var(--text-muted); font-size: 0.85rem;">All models align on supply-side inflation hedges.</span></li>
+                        <li class="panel-item"><strong>Avoidance of unhedged Tech</strong><br><span style="color: var(--text-muted); font-size: 0.85rem;">Strict mandate to neutralize exposure to duration-sensitive equites.</span></li>
+                    </ul>
+                </div>
+
+                <div class="panel-group divergent">
+                    <h3 style="color: var(--accent-renaissance);">Divergent Alpha (Quant Agent Signal Only)</h3>
+                    <ul class="panel-list">
+                        <li class="panel-item" style="border-left-color: var(--accent-renaissance);"><strong style="color: var(--accent-renaissance);">Renaissance (Quant Model) - Unique Signal</strong><br><span style="font-size: 0.85rem;">Short-term statistical stat-arb exploiting transient panic pricing. Only the Quant agent sees this signal, diverging from Macro and Risk agents.</span></li>
+                        <li class="panel-item" style="border-left-color: var(--accent-bridgewater);"><strong style="color: var(--accent-bridgewater);">Bridgewater</strong> <span style="font-size: 0.85rem;">Directional macro bets focusing on structural duration shorts.</span></li>
+                        <li class="panel-item" style="border-left-color: var(--accent-millennium);"><strong style="color: var(--accent-millennium);">Millennium</strong> <span style="font-size: 0.85rem;">Hedged relative value pairs neutralizing net market beta.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <h2 style="text-align: center; font-weight: 300; margin: 40px 0 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">Agentic 13F (Projected Forward Holdings)</h2>
+
+        <!-- Agentic 13F Section -->
+        <div class="grid-bottom">
+            <div class="agent-card millennium">
+                <div class="agent-title">Millennium <span class="agent-tag" style="color: var(--accent-millennium);">Risk-Controlled</span></div>
+                <ul class="holdings-list">
+                    <li>Long Energy / Short Tech pairs</li>
+                    <li>Index options hedges (SPY/QQQ puts)</li>
+                    <li>Low net beta exposure</li>
+                </ul>
+            </div>
+
+            <div class="agent-card bridgewater">
+                <div class="agent-title">Bridgewater <span class="agent-tag" style="color: var(--accent-bridgewater);">Regime Macro</span></div>
+                <ul class="holdings-list">
+                    <li>Long broad commodities</li>
+                    <li>Short duration sovereign bonds</li>
+                    <li>Strictly reduced tech exposure</li>
+                </ul>
+            </div>
+
+            <div class="agent-card renaissance">
+                <div class="agent-title">Renaissance <span class="agent-tag" style="color: var(--accent-renaissance);">Quant Signal</span></div>
+                <ul class="holdings-list">
+                    <li>Rapid rotation positions</li>
+                    <li>Short-term tech mean reversion targets</li>
+                    <li>Short energy spikes (temporary fading)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        
+        Chart.defaults.color = '#94a3b8';
+        Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+
+        new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: [
+                    'Macro Sensitivity', 
+                    'Quant Signal Dependence', 
+                    'Net Market Exposure', 
+                    'Risk Tightness', 
+                    'Time Horizon'
+                ],
+                datasets: [
+                    {
+                        label: 'Millennium',
+                        data: [2, 2, 2, 5, 3],
+                        backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                        borderColor: '#38bdf8',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0f172a',
+                        pointBorderColor: '#38bdf8',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#38bdf8',
+                        pointHoverBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Bridgewater',
+                        data: [5, 2, 4, 3, 5],
+                        backgroundColor: 'rgba(250, 204, 21, 0.15)',
+                        borderColor: '#facc15',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0f172a',
+                        pointBorderColor: '#facc15',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#facc15',
+                        pointHoverBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Renaissance',
+                        data: [2, 5, 3, 4, 1],
+                        backgroundColor: 'rgba(251, 113, 133, 0.15)',
+                        borderColor: '#fb7185',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#0f172a',
+                        pointBorderColor: '#fb7185',
+                        pointBorderWidth: 2,
+                        pointHoverBackgroundColor: '#fb7185',
+                        pointHoverBorderColor: '#fff',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.08)' },
+                        grid: { 
+                            color: 'rgba(255, 255, 255, 0.05)',
+                            circular: true
+                        },
+                        pointLabels: {
+                            color: '#cbd5e1',
+                            font: { 
+                                size: 12,
+                                weight: '500'
+                            }
+                        },
+                        ticks: {
+                            display: false,
+                            min: 0,
+                            max: 5,
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 24,
+                            usePointStyle: true,
+                            pointStyle: 'circle',
+                            color: '#f8fafc',
+                            font: { size: 13 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                        titleColor: '#f8fafc',
+                        bodyColor: '#cbd5e1',
+                        borderColor: 'rgba(255,255,255,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        boxPadding: 6
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

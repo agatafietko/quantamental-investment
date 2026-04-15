@@ -1,0 +1,232 @@
+{
+    "Summary": {
+        "Overview": "TSLA's current regime is characterized by a 'Robotics Pivot' transition, marred by declining automotive margins and regulatory friction in California. Short interest remains at historically low levels (2.23-2.69% of float), indicating that price action is driven by macro sentiment and institutional repositioning rather than squeeze mechanics.",
+        "KeyThesis": "Near-term consolidation or downside risk due to information diffusion of negative robotaxi regulatory news, offset by speculative attention shocks in AI/Optimus.",
+        "UncertaintyLevel": "Medium-High"
+    },
+    "Inputs": {
+        "ticker": "TSLA",
+        "date_range": "2026-01-27 to 2026-02-26",
+        "retrieved_at": "2026-02-26T16:56:03Z"
+    },
+    "Evidence": [
+        {
+            "source_type": "official_financial_reporting",
+            "publisher": "FINRA/Nasdaq via Benzinga",
+            "timestamp": "2026-01-30T00:00:00Z",
+            "retrieved_at": "2026-02-26T22:56:00Z",
+            "label": "Short Interest",
+            "value": "64,365,617 shares (2.69% float)"
+        },
+        {
+            "source_type": "real_time_estimate",
+            "publisher": "Ortex",
+            "timestamp": "2026-02-24T00:00:00Z",
+            "retrieved_at": "2026-02-26T22:56:00Z",
+            "label": "Short Interest Estimate",
+            "value": "62.62M shares (2.23% float)"
+        },
+        {
+            "source_type": "news_sentiment_aggregator",
+            "publisher": "AltIndex",
+            "timestamp": "2026-02-25T00:00:00Z",
+            "retrieved_at": "2026-02-26T22:56:00Z",
+            "label": "News Sentiment Score",
+            "value": "60/100"
+        },
+        {
+            "source_type": "social_media_chatter",
+            "publisher": "Reddit/X",
+            "timestamp": "2026-02-26T00:00:00Z",
+            "retrieved_at": "2026-02-26T22:56:00Z",
+            "label": "Social Sentiment",
+            "value": "Bearish Shift (38.0 index)"
+        }
+    ],
+    "Signals": {
+        "ShortInterest": {
+            "SI_pct_float": 2.23,
+            "Days_to_cover": 1.02,
+            "Change_vs_prior": -2.71,
+            "AnomalyScore": 0.15,
+            "Status": "Stable-Low"
+        },
+        "News": {
+            "VolumeTrend": "Increasing",
+            "SentimentScore": -0.42,
+            "MajorTopic": "Regulatory Permitting (California Robotaxi)",
+            "AnomalyScore": 0.68
+        },
+        "WebSignals": {
+            "SearchInterest": "Stable",
+            "SocialChatterVolume": "High",
+            "AttentionShockIndicator": "Positive (Feb 4th, Feb 26th)",
+            "AnomalyScore": 0.72
+        },
+        "CrossSignalConsistency": {
+            "Alignment": "News Sentiment and Social Chatter are aligned (Bearish).",
+            "Divergence": "Borrow fees (low) diverge from heavy put buying conviction (Bearish).",
+            "ReliabilityScore": 82
+        }
+    },
+    "EconomicValidation": {
+        "Checks": [
+            "Market Microstructure Analysis",
+            "Short Squeeze Plausibility",
+            "Information Diffusion Speed",
+            "Behavioral Attention Bias"
+        ],
+        "Findings": [
+            {
+                "Theory": "Short Squeeze Mechanics",
+                "Label": "Conflict",
+                "Description": "Social media 'Squeeze' narrative contradicts official SI data (2.23%). Squeeze is statistically implausible given 1.02 days to cover.",
+                "Relationship": "Correlation-only"
+            },
+            {
+                "Theory": "Information Diffusion",
+                "Label": "Plausible Causal",
+                "Description": "Reuters robotaxi news led to 2.1% intraday drop; prices are efficiently absorbing regulatory friction.",
+                "Relationship": "Causal"
+            },
+            {
+                "Theory": "Behavioral Finance",
+                "Label": "Conflict",
+                "Description": "Retail attention spikes (Feb 4) did not lead to sustained buyers; 'Attention-driven trading' is present but transient.",
+                "Relationship": "Correlation-only"
+            }
+        ],
+        "Conflicts": [
+            "Institutional Put Volume vs Retail 'Buy the Dip' social sentiment (X).",
+            "Low Borrow Fees vs High Bearish conviction in options market."
+        ],
+        "Uncertainty": {
+            "Level": "High",
+            "Drivers": [
+                "Opaque private short estimates",
+                "Political/Regulatory volatility in CA",
+                "AI/Optimus production timeline opacity"
+            ]
+        }
+    },
+    "Scenarios": [
+        {
+            "ScenarioName": "Baseline Replay",
+            "Narrative": "Static extrapolation of current trends. Continued high-volume churn around the $400 mark with decaying retail interest.",
+            "ShockDefinition": "Delta(All) = 0. Volatility = 1.0x.",
+            "EconomicRationale": "Current market microstructure reaches an equilibrium of bear/bull tension.",
+            "ExpectedSignalResponse": "News sentiment remains neutral-bearish; SI remains < 3%.",
+            "MarketImpactHypothesis": "Price range-bound between $380 and $420.",
+            "RiskFlags": [
+                "Status Quo Bias"
+            ],
+            "StressTestMetrics": {
+                "VolatilityMultiplier": 1.0,
+                "SignalStabilityScore": 95,
+                "FragilityScore": 10
+            }
+        },
+        {
+            "ScenarioName": "Short Squeeze Catalyst",
+            "Narrative": "Sudden announcement of Optimus factory delivery ahead of schedule triggers mechanical covering from retail shorts.",
+            "ShockDefinition": "Delta(Attention) = +300%, Delta(SI) = -50% (Covering).",
+            "EconomicRationale": "Forced covering due to rapid information diffusion of positive alpha.",
+            "ExpectedSignalResponse": "Days to cover drops to <0.5; price parabolic.",
+            "MarketImpactHypothesis": "15-20% gap up.",
+            "RiskFlags": [
+                "Mechanical Over-indexing"
+            ],
+            "StressTestMetrics": {
+                "VolatilityMultiplier": 2.5,
+                "SignalStabilityScore": 40,
+                "FragilityScore": 85
+            }
+        },
+        {
+            "ScenarioName": "Negative News Cascade",
+            "Narrative": "California DMV officially blocks Robotaxi service. European sales decline continues to 15th consecutive month.",
+            "ShockDefinition": "Delta(Sentiment) = -200%, Delta(Volume) = +150%.",
+            "EconomicRationale": "Cascading fundamental deterioration leads to multi-period margin compression.",
+            "ExpectedSignalResponse": "News sentiment hits -0.9; Put/Call ratio spikes to 3.0.",
+            "MarketImpactHypothesis": "Price floor breakthrough below 52-week lows.",
+            "RiskFlags": [
+                "Fundamental Collapse"
+            ],
+            "StressTestMetrics": {
+                "VolatilityMultiplier": 1.8,
+                "SignalStabilityScore": 60,
+                "FragilityScore": 70
+            }
+        },
+        {
+            "ScenarioName": "Attention-only Spike",
+            "Narrative": "CEO social media posts drive 500% spike in web search interest without fundamental news.",
+            "ShockDefinition": "Delta(WebSignals) = +500%, Delta(Fundamentals) = 0.",
+            "EconomicRationale": "Behavioral bias/fame premium without supply-demand adjustment.",
+            "ExpectedSignalResponse": "Web signals anomalies trigger high alerts while SI remains static.",
+            "MarketImpactHypothesis": "Mean-reverting intraday pump and dump.",
+            "RiskFlags": [
+                "False Positive"
+            ],
+            "StressTestMetrics": {
+                "VolatilityMultiplier": 1.4,
+                "SignalStabilityScore": 30,
+                "FragilityScore": 90
+            }
+        },
+        {
+            "ScenarioName": "Short Interest Unwind",
+            "Narrative": "Institutional shorts exit silently as borrow fees drop to 0.1%, leading to a slow bleed up.",
+            "ShockDefinition": "Delta(SI) = -80%, Delta(Sentiment) = +5% (Creep).",
+            "EconomicRationale": "Microstructure rebalancing as shorting becomes capital-inefficient.",
+            "ExpectedSignalResponse": "SI % Float drops to <1%.",
+            "MarketImpactHypothesis": "Slow 'grind' higher on low volume.",
+            "RiskFlags": [
+                "Silent Rotation"
+            ],
+            "StressTestMetrics": {
+                "VolatilityMultiplier": 0.8,
+                "SignalStabilityScore": 85,
+                "FragilityScore": 25
+            }
+        },
+        {
+            "ScenarioName": "Conflicting Signals Regime",
+            "Narrative": "Strong robotaxi revenue reports conflict with catastrophic European sales decline.",
+            "ShockDefinition": "Delta(NewsVariance) = +400%.",
+            "EconomicRationale": "Divergent macro forces create high-uncertainty market regime.",
+            "ExpectedSignalResponse": "Signal reliability score drops below 50.",
+            "MarketImpactHypothesis": "Extreme intraday whip-sawing.",
+            "RiskFlags": [
+                "Inconclusive Data"
+            ],
+            "StressTestMetrics": {
+                "VolatilityMultiplier": 3.0,
+                "SignalStabilityScore": 15,
+                "FragilityScore": 95
+            }
+        }
+    ],
+    "ScenarioComparison": {
+        "MostFragileSignals": [
+            "SocialChatterVolume",
+            "SentimentScore"
+        ],
+        "MostRobustSignals": [
+            "ShortInterestFloatPct",
+            "DaysToCover"
+        ],
+        "OverallRobustnessScore": 58
+    },
+    "DashboardMetrics": {
+        "AnomalyCount": 3,
+        "SqueezeRiskLevel": "Low",
+        "AttentionShockLevel": "Medium",
+        "CompositeRiskScore": 62
+    },
+    "RisksAndLimitations": [
+        "Short interest data is bi-weekly lagged; synthetic estimates may miss intra-period repositioning.",
+        "Sentiment analysis of Grok rollout in ANZ may be regionally biased.",
+        "Robotaxi regulatory permit updates are unpredictable 'Black Swan' events."
+    ]
+}

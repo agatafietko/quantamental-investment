@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midnight Emerald | Agentic Trading Terminal</title>
+    <!-- React, ReactDOM, Babel, Tailwind, Framer Motion, Lucide -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --emerald-glow: #A3FF12;
+            --emerald-deep: #064e3b;
+            --midnight: #030712;
+            --crimson: #ef4444;
+            --slate: #1e293b;
+        }
+
+        body {
+            background-color: var(--midnight);
+            color: #f8fafc;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            /* Terminal feel */
+            height: 100vh;
+        }
+
+        .emerald-border {
+            border-color: rgba(163, 255, 18, 0.2);
+        }
+
+        .emerald-text {
+            color: var(--emerald-glow);
+        }
+
+        .glow-emerald {
+            text-shadow: 0 0 10px rgba(163, 255, 18, 0.4);
+        }
+
+        .bg-glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+        }
+
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .terminal-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .terminal-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .terminal-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--emerald-deep);
+            border-radius: 10px;
+        }
+
+        @keyframes pulse-heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.8;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .heartbeat {
+            animation: pulse-heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(100%);
+            }
+
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .marquee {
+            animation: marquee 20s linear infinite;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: rgba(163, 255, 18, 0.05);
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            100% {
+                top: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+        const MotionLib = window.FramerMotion || window.Motion || {};
+        const { motion, AnimatePresence } = MotionLib;
+
+        // --- MOCK DATA BASED ON RESEARCH ---
+        const MOCK_RESEARCH = {
+            UBER: {
+                analyst: {
+                    sentiment: 79,
+                    quotes: [
+                        '"Gross Bookings grew 18% YoY to $162.8B, or 21% on CC basis."',
+                        '"Robotaxi expansion with Baidu/WeRide targeting 10+ markets by 2026."',
+                        '"Free cash flow increased by 105% to $6.9B, enabling $7B buyback."'
+                    ]
+                },
+                quant: {
+                    price: 81.22,
+                    rsi: 27.5,
+                    sma200: 89.17,
+                    vol: 27.98
+                },
+                risk: {
+                    adversarial: "Regulatory reclassification in NZ/EU threatens the core gig-worker model, potentially negating efficiency gains."
+                }
+            }
+        };
+
+        const AGENT_STATUS = { IDLE: 'IDLE', WORKING: 'WORKING', DONE: 'DONE' };
+
+        // --- COMPONENTS ---
+
+        const LucideIcon = ({ name, className, size = 18 }) => {
+            useEffect(() => {
+                if (window.lucide) window.lucide.createIcons();
+            }, [name]);
+            return <i data-lucide={name} className={className} style={{ width: size, height: size }}></i>;
+        };
+
+        const ConfidenceGauge = ({ score }) => {
+            const rotation = (score / 100) * 180 - 90;
+            return (
+                <div className="relative w-full h-48 flex items-end justify-center pt-8 overflow-hidden">
+                    <svg viewBox="0 0 200 120" className="w-full max-w-xs drop-shadow-[0_0_20px_rgba(163,255,18,0.2)]">
+                        <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stopColor="#ef4444" />
+                                <stop offset="50%" stopColor="#eab308" />
+                                <stop offset="100%" stopColor="#A3FF12" />
+                            </linearGradient>
+                        </defs>
+                        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#1e293b" strokeWidth="12" strokeLinecap="round" />
+                        <motion.path
+                            initial={{ pathLength: 0 }}
+                            animate={{ pathLength: score / 100 }}
+                            transition={{ duration: 2, ease: "easeOut" }}
+                            d="M 20 100 A 80 80 0 0 1 180 100"
+                            fill="none"
+                            stroke="url(#gaugeGradient)"
+                            strokeWidth="12"
+                            strokeLinecap="round"
+                        />
+                    </svg>
+                    <motion.div
+                        animate={{ rotate: rotation }}
+                        transition={{ type: "spring", damping: 10, stiffness: 50 }}
+                        style={{ originX: "50%", originY: "100%", bottom: "20px" }}
+                        className="absolute w-1 h-32 bg-white rounded-full z-10 shadow-[0_0_15px_white]"
+                    />
+                    <div className="absolute bottom-[10px] w-8 h-8 bg-black border-4 border-emerald-900 rounded-full z-20 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 bg-[#A3FF12] rounded-full animate-pulse shadow-[0_0_8px_#A3FF12]" />
+                    </div>
+                </div>
+            );
+        };
+
+        const MiniChart = ({ data, color = "#A3FF12" }) => (
+            <div className="h-16 w-full flex items-end gap-1 px-1">
+                {data.map((val, i) => (
+                    <motion.div
+                        key={i}
+                        initial={{ height: 0 }}
+                        animate={{ height: `${val}%` }}
+                        className="flex-1 rounded-t-[2px]"
+                        style={{ backgroundColor: color, opacity: 0.3 + (i / data.length) * 0.7 }}
+                    />
+                ))}
+            </div>
+        );
+
+        // --- MAIN APP ---
+
+        const App = () => {
+            const [ticker, setTicker] = useState('UBER');
+            const [isScanning, setIsScanning] = useState(false);
+            const [logs, setLogs] = useState([]);
+            const [confidence, setConfidence] = useState(0);
+            const [riskScore, setRiskScore] = useState(0);
+            const [agentStates, setAgentStates] = useState({
+                analyst: AGENT_STATUS.IDLE,
+                quant: AGENT_STATUS.IDLE,
+                risk: AGENT_STATUS.IDLE
+            });
+            const [overrides, setOverrides] = useState({ analyst: false, quant: false, risk: false });
+            const [time, setTime] = useState(new Date());
+
+            const consoleEndRef = useRef(null);
+
+            useEffect(() => {
+                const timer = setInterval(() => setTime(new Date()), 1000);
+                return () => clearInterval(timer);
+            }, []);
+
+            useEffect(() => {
+                consoleEndRef.current?.scrollIntoView({ behavior: "smooth" });
+            }, [logs]);
+
+            const addLog = async (agent, message, speed = 15) => {
+                const timestamp = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                const id = Math.random().toString(36).substr(2, 9);
+                setLogs(prev => [...prev, { id, agent, message: '', timestamp }]);
+
+                for (let i = 0; i <= message.length; i++) {
+                    setLogs(prev => prev.map(l => l.id === id ? { ...l, message: message.slice(0, i) } : l));
+                    await new Promise(r => setTimeout(r, speed));
+                }
+            };
+
+            const runComprehensiveAnalysis = async () => {
+                if (isScanning) return;
+                setIsScanning(true);
+                setLogs([]);
+                setConfidence(0);
+                setRiskScore(0);
+                setAgentStates({ analyst: AGENT_STATUS.IDLE, quant: AGENT_STATUS.IDLE, risk: AGENT_STATUS.IDLE });
+
+                await addLog('SYSTEM', `Initializing Quantum Link for $${ticker.toUpperCase()}...`, 5);
+                await new Promise(r => setTimeout(r, 600));
+
+                // Analyst
+                setAgentStates(prev => ({ ...prev, analyst: AGENT_STATUS.WORKING }));
+                await addLog('ANALYST', 'Scraping SEC FILING 10-K & FOMC Transcripts...');
+                await new Promise(r => setTimeout(r, 1200));
+                const quotes = MOCK_RESEARCH.UBER.analyst.quotes;
+                for (const q of quotes) {
+                    await addLog('ANALYST', `Grounding: ${q}`, 5);
+                }
+                setAgentStates(prev => ({ ...prev, analyst: AGENT_STATUS.DONE }));
+                await addLog('ANALYST', `Sentiment Analysis Complete. Score: ${MOCK_RESEARCH.UBER.analyst.sentiment}/100.`);
+
+                // Quant
+                setAgentStates(prev => ({ ...prev, quant: AGENT_STATUS.WORKING }));
+                await addLog('QUANT', 'Fetching HFT price feed and technical indicators...');
+                await new Promise(r => setTimeout(r, 1000));
+                const q = MOCK_RESEARCH.UBER.quant;
+                await addLog('QUANT', `Indicators: RSI(${q.rsi}) | SMA200(${q.sma200}) | Volatiltiy(${q.vol}%).`);
+                setAgentStates(prev => ({ ...prev, quant: AGENT_STATUS.DONE }));
+                await addLog('QUANT', `Structural trend identified: ${q.price < q.sma200 ? 'Bearish Decoupling' : 'Bullish Support'}.`);
+
+                // Risk Guardian
+                setAgentStates(prev => ({ ...prev, risk: AGENT_STATUS.WORKING }));
+                await addLog('RISK', 'Detecting adversarial macro correlations...');
+                await new Promise(r => setTimeout(r, 1500));
+                await addLog('RISK', `Alert: ${MOCK_RESEARCH.UBER.risk.adversarial}`);
+                setAgentStates(prev => ({ ...prev, risk: AGENT_STATUS.DONE }));
+
+                // Final Synthesis
+                await addLog('SYSTEM', 'Compiling global intelligence matrix...', 5);
+                await new Promise(r => setTimeout(r, 1000));
+
+                calculateResults();
+                setIsScanning(false);
+            };
+
+            const calculateResults = () => {
+                // Logic weighted by overrides
+                let conf = 0;
+                let risk = 0;
+
+                const aScore = overrides.analyst ? 100 : MOCK_RESEARCH.UBER.analyst.sentiment;
+                const qScore = overrides.quant ? 100 : (MOCK_RESEARCH.UBER.quant.price > MOCK_RESEARCH.UBER.quant.sma200 ? 80 : 30);
+                const rScore = overrides.risk ? 10 : 65; // High risk simulated
+
+                conf = (aScore * 0.4) + (qScore * 0.4) + ((100 - rScore) * 0.2);
+                risk = rScore;
+
+                setConfidence(conf);
+                setRiskScore(risk);
+            };
+
+            const toggleOverride = (agent) => {
+                setOverrides(prev => {
+                    const next = { ...prev, [agent]: !prev[agent] };
+                    // Recalculate if already done
+                    if (agentStates.analyst === AGENT_STATUS.DONE) {
+                        setTimeout(() => calculateResults(), 100);
+                    }
+                    return next;
+                });
+            };
+
+            const resetSystem = () => {
+                setIsScanning(false);
+                setLogs([]);
+                setConfidence(0);
+                setRiskScore(0);
+                setAgentStates({ analyst: AGENT_STATUS.IDLE, quant: AGENT_STATUS.IDLE, risk: AGENT_STATUS.IDLE });
+                setOverrides({ analyst: false, quant: false, risk: false });
+            };
+
+            const smartExecuteEnabled = confidence > 75 && riskScore < 30;
+            const missingRequirements = [];
+            if (confidence <= 75) missingRequirements.push("Awaiting Analyst/Quant Conviction (>75%)");
+            if (riskScore >= 30) missingRequirements.push("Macro Risk Exposure Excessive (<30%)");
+
+            return (
+                <div className="flex flex-col h-screen p-4 md:p-6 gap-6 relative">
+                    <div className="scanline" />
+
+                    {/* --- HEADER --- */}
+                    <header className="flex flex-col md:flex-row items-center justify-between border-b border-[#A3FF12]/20 pb-4 shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="relative">
+                                <LucideIcon name="component" className="text-[#A3FF12] heartbeat" size={28} />
+                                <div className="absolute inset-0 bg-[#A3FF12]/20 blur-lg rounded-full" />
+                            </div>
+                            <div>
+                                <h1 className="text-2xl font-black italic tracking-tighter uppercase emerald-text glow-emerald">
+                                    Agentic Terminal <span className="text-slate-600 font-light not-italic">V2.0</span>
+                                </h1>
+                                <div className="flex items-center gap-2 text-[10px] mono text-slate-500 font-bold uppercase tracking-widest">
+                                    <span className="text-[#A3FF12]/60">Heartbeat: Active</span>
+                                    <span className="w-1 h-1 bg-emerald-500 rounded-full" />
+                                    <span>{time.toLocaleTimeString()}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex-grow max-w-md mx-6 hidden lg:block overflow-hidden bg-emerald-950/20 py-1 rounded border border-emerald-900/30">
+                            <div className="marquee whitespace-nowrap text-[11px] mono font-bold">
+                                <span className="emerald-text mx-4">$SPY: 593.12 (+0.42%)</span>
+                                <span className="text-blue-400 mx-4">$BTC: 98,241.50 (-1.2%)</span>
+                                <span className="text-red-400 mx-4">$NVDA: 134.12 (+2.4%)</span>
+                                <span className="text-yellow-400 mx-4">GOLD: 2,641.20 (UNCH)</span>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-4 glass px-4 py-2 rounded-xl emerald-border border">
+                            <LucideIcon name="shield-check" className="text-blue-400" />
+                            <div className="text-right">
+                                <div className="text-[9px] text-slate-500 font-bold">SECURITY ENCRYPTION</div>
+                                <div className="text-[11px] mono font-bold">P2P-256-GCM</div>
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* --- MAIN DASHBOARD --- */}
+                    <main className="flex-grow flex flex-col md:grid md:grid-cols-12 gap-6 overflow-hidden">
+
+                        {/* LEFT: STRATEGIC INSIGHTS */}
+                        <div className="md:col-span-4 flex flex-col gap-6 overflow-y-auto terminal-scrollbar pr-2">
+
+                            {/* Confidence Area */}
+                            <section className="bg-glass rounded-2xl p-6 border border-emerald-900/30 flex flex-col items-center">
+                                <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Synthetic Confidence Matrix</h3>
+                                <ConfidenceGauge score={confidence} />
+                                <div className="mt-4 text-center">
+                                    <div className="text-5xl font-black tracking-tighter tabular-nums emerald-text">{confidence.toFixed(0)}<span className="text-xl opacity-50">%</span></div>
+                                    <div className="text-[10px] mono text-slate-500 mt-1">RISK EXPOSURE: <span className={riskScore > 50 ? 'text-red-500' : 'text-blue-400'}>{riskScore.toFixed(0)}%</span></div>
+                                </div>
+                            </section>
+
+                            {/* Agent Command Center */}
+                            <div className="flex flex-col gap-3">
+                                {[
+                                    { id: 'analyst', label: 'Analyst Pod', task: 'Sentiment Synthesis', icon: 'eye' },
+                                    { id: 'quant', label: 'Quant Engine', task: 'Technical Extraction', icon: 'database' },
+                                    { id: 'risk', label: 'Risk Guardian', task: 'Adversarial Defense', icon: 'frown' }
+                                ].map(agent => (
+                                    <div key={agent.id} className={`p-4 rounded-xl border-l-[3px] bg-glass transition-all duration-500 ${agentStates[agent.id] === AGENT_STATUS.DONE ? 'border-[#A3FF12]' : 'border-slate-800'
+                                        }`}>
+                                        <div className="flex items-center justify-between mb-3">
+                                            <div className="flex items-center gap-3">
+                                                <div className={`p-2 rounded-lg ${agentStates[agent.id] === AGENT_STATUS.DONE ? 'bg-emerald-500/10 text-[#A3FF12]' : 'bg-slate-800 text-slate-500'}`}>
+                                                    <LucideIcon name={agent.icon} size={16} />
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-bold">{agent.label}</div>
+                                                    <div className="text-[9px] text-slate-500 uppercase">{agent.task}</div>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => toggleOverride(agent.id)}
+                                                className={`text-[9px] px-2 py-0.5 rounded font-black uppercase transition-all ${overrides[agent.id] ? 'bg-[#A3FF12] text-black shadow-[0_0_10px_#A3FF12]' : 'bg-slate-800 text-slate-500'
+                                                    }`}
+                                            >
+                                                {overrides[agent.id] ? 'Overridden' : 'Override'}
+                                            </button>
+                                        </div>
+                                        {/* Dynamic Chart Simulation for Quant/Risk */}
+                                        <MiniChart
+                                            data={agent.id === 'quant' ? [20, 35, 25, 60, 45, 80, 70] : [80, 70, 75, 50, 60, 40, 30]}
+                                            color={agent.id === 'quant' ? '#A3FF12' : '#ef4444'}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* RIGHT: TACTICAL CONTROL & LOGS */}
+                        <div className="md:col-span-8 flex flex-col gap-6 overflow-hidden">
+
+                            {/* LOG CONSOLE */}
+                            <section className="bg-glass rounded-2xl flex flex-col border border-white/5 flex-grow overflow-hidden shadow-2xl">
+                                <div className="bg-black/40 px-6 py-3 border-b border-emerald-900/30 flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <div className="flex gap-1">
+                                            <div className="w-2 h-2 rounded-full bg-red-900/30 border border-red-500/20" />
+                                            <div className="w-2 h-2 rounded-full bg-yellow-900/30 border border-yellow-500/20" />
+                                            <div className="w-2 h-2 rounded-full bg-green-900/30 border border-green-500/20" />
+                                        </div>
+                                        <span className="text-[10px] mono font-bold text-slate-500 uppercase tracking-widest leading-none mt-0.5">Tactical_Intelligence_Feed</span>
+                                    </div>
+                                    <div className="text-[10px] mono text-[#A3FF12]/40 font-bold uppercase">Uplink: Synchronized</div>
+                                </div>
+                                <div className="p-6 overflow-y-auto terminal-scrollbar bg-black/40 flex-grow font-mono text-xs md:text-sm space-y-3 content-start">
+                                    <AnimatePresence>
+                                        {logs.length === 0 ? (
+                                            <div className="h-full flex flex-col items-center justify-center text-slate-700 italic opacity-50">
+                                                <LucideIcon name="terminal" size={48} className="mb-4" />
+                                                <p className="text-[10px] tracking-widest uppercase">System Idle. Awaiting Ticker Data...</p>
+                                            </div>
+                                        ) : (
+                                            logs.map(log => (
+                                                <motion.div
+                                                    key={log.id}
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    className="flex gap-4 border-l border-emerald-900/20 pl-4 py-1"
+                                                >
+                                                    <span className="text-slate-600 shrink-0 font-bold">[{log.timestamp}]</span>
+                                                    <span className={`shrink-0 font-black uppercase text-[11px] w-20 ${log.agent === 'ANALYST' ? 'text-blue-500' :
+                                                            log.agent === 'QUANT' ? 'text-[#A3FF12]' :
+                                                                log.agent === 'RISK' ? 'text-orange-500' :
+                                                                    log.agent === 'SYSTEM' ? 'text-white' : 'text-slate-500'
+                                                        }`}>{log.agent}:</span>
+                                                    <span className="text-slate-300 leading-relaxed break-words">{log.message}</span>
+                                                </motion.div>
+                                            ))
+                                        )}
+                                    </AnimatePresence>
+                                    <div ref={consoleEndRef} />
+                                </div>
+                            </section>
+
+                            {/* CONTROL DOCK */}
+                            <footer className="grid grid-cols-1 lg:grid-cols-12 gap-4 shrink-0">
+                                <div className="lg:col-span-3">
+                                    <div className="relative h-14">
+                                        <input
+                                            value={ticker}
+                                            onChange={(e) => setTicker(e.target.value)}
+                                            className="w-full h-full bg-glass border border-emerald-900/30 rounded-xl px-12 mono font-black text-xl uppercase tracking-tighter outline-none focus:border-[#A3FF12]/50 transition-all text-[#A3FF12]"
+                                            placeholder="TICKER"
+                                        />
+                                        <LucideIcon name="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                    </div>
+                                </div>
+
+                                <button
+                                    onClick={runComprehensiveAnalysis}
+                                    disabled={isScanning}
+                                    className={`lg:col-span-4 h-14 rounded-xl flex items-center justify-center gap-3 font-black uppercase tracking-widest transition-all ${isScanning ? 'bg-slate-900 text-slate-600 border-slate-800' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-[0_0_20px_rgba(163,255,18,0.2)]'
+                                        } border border-white/5`}
+                                >
+                                    <LucideIcon name={isScanning ? "loader-2" : "play"} className={isScanning ? 'animate-spin' : ''} />
+                                    <span>Re-Scan Agent Fleet</span>
+                                </button>
+
+                                <div className="lg:col-span-3 group relative">
+                                    <button
+                                        disabled={!smartExecuteEnabled}
+                                        className={`w-full h-14 rounded-xl flex items-center justify-center gap-3 font-black uppercase tracking-widest transition-all ${smartExecuteEnabled
+                                                ? 'bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.3)] animate-pulse'
+                                                : 'bg-slate-800 text-slate-600 cursor-not-allowed opacity-50 grayscale'
+                                            } border border-white/5`}
+                                    >
+                                        <LucideIcon name="zap" />
+                                        <span>Smart Execute</span>
+                                    </button>
+                                    {!smartExecuteEnabled && (
+                                        <div className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-64 p-3 bg-slate-900 border border-red-900/50 rounded-lg text-[10px] text-red-400 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                                            <div className="font-black mb-1 flex items-center gap-2">
+                                                <LucideIcon name="alert-triangle" size={12} /> SAFETY INTERLOCK ENGAGED
+                                            </div>
+                                            <ul className="list-disc pl-3 space-y-1">
+                                                {missingRequirements.map((r, i) => <li key={i}>{r}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <button
+                                    onClick={resetSystem}
+                                    className="lg:col-span-2 h-14 bg-red-950/20 hover:bg-red-900/30 text-red-500 border border-red-500/20 rounded-xl flex items-center justify-center transition-all"
+                                >
+                                    <LucideIcon name="power" />
+                                </button>
+                            </footer>
+                        </div>
+                    </main>
+
+                    {/* --- SYSTEM DETAIL FOOTER --- */}
+                    <footer className="mt-4 flex flex-col md:flex-row justify-between items-center text-[10px] mono text-slate-600 font-bold uppercase tracking-[0.2em]">
+                        <div className="flex gap-6">
+                            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-green-500 rounded-full glow-emerald" /> LATENCY: 0.8ms</span>
+                            <span className="flex items-center gap-2"><div className="w-1.5 h-1.5 bg-blue-500 rounded-full" /> NODE: QUANTUM_DEEP_ALPHA</span>
+                        </div>
+                        <div className="text-center md:text-right hidden md:block">
+                            CONFIDENTIAL ALPHA INTEL // TRADING TERMINAL V2.0.4-STABLE
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

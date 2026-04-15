@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantimental Synthesis Dashboard - TSLA</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0e14;
+            --card-bg: rgba(23, 32, 42, 0.8);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.3);
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border: rgba(255, 255, 255, 0.1);
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 40%);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--accent);
+            text-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .badge {
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border-color: var(--accent);
+        }
+
+        .span-12 {
+            grid-column: span 12;
+        }
+
+        .span-8 {
+            grid-column: span 8;
+        }
+
+        .span-4 {
+            grid-column: span 4;
+        }
+
+        .span-6 {
+            grid-column: span 6;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            color: var(--accent);
+        }
+
+        h3 {
+            font-size: 14px;
+            color: var(--text-dim);
+            margin: 0 0 10px 0;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .scenario-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .scenario-item {
+            border-left: 3px solid var(--accent);
+            padding-left: 16px;
+            padding-bottom: 8px;
+        }
+
+        .scenario-name {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+
+        .scenario-meta {
+            font-size: 12px;
+            color: var(--text-dim);
+        }
+
+        .risk-high {
+            color: var(--danger);
+        }
+
+        .risk-med {
+            color: var(--warning);
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #1e293b;
+            border-radius: 3px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        pre {
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 12px;
+            overflow-x: auto;
+            color: #10b981;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">ANTIGRAVITY // SYNTHESIS</div>
+            <div>
+                <span class="live-indicator"></span>
+                <span class="badge">TSLA // REB-2026</span>
+            </div>
+        </header>
+
+        <div class="grid">
+            <!-- Summary Card -->
+            <div class="card span-8">
+                <h2>Executive Summary</h2>
+                <p id="summary-text" style="line-height: 1.6;">Loading synthesis...</p>
+                <div style="display: flex; gap: 40px; margin-top: 20px;">
+                    <div>
+                        <div class="metric-value" id="composite-risk">--</div>
+                        <div class="metric-label">Composite Risk</div>
+                    </div>
+                    <div>
+                        <div class="metric-value" id="robustness">--</div>
+                        <div class="metric-label">System Robustness</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Metrics -->
+            <div class="card span-4">
+                <h2>System Health</h2>
+                <div class="metric-item">
+                    <div class="metric-label">Anomaly Count</div>
+                    <div class="metric-value" id="anomaly-count">--</div>
+                </div>
+                <h3>Squeeze Risk: <span id="squeeze-risk">--</span></h3>
+                <div class="progress-bar">
+                    <div id="risk-progress" class="progress-fill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Scenarios -->
+            <div class="card span-12">
+                <h2>6-Stage Synthetic Stress Tests</h2>
+                <div class="grid" id="scenarios-container" style="gap: 16px;">
+                    <!-- Scenarios will be injected here -->
+                </div>
+            </div>
+
+            <!-- Economic Validation -->
+            <div class="card span-6">
+                <h2>Economic Validation</h2>
+                <div id="validation-list" class="scenario-list">
+                    <!-- Checks will be injected here -->
+                </div>
+            </div>
+
+            <!-- raw json -->
+            <div class="card span-6">
+                <h2>Raw Context Feed</h2>
+                <pre id="json-feed">Loading feed...</pre>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            "Summary": {
+                "Overview": "TSLA's current regime is characterized by a 'Robotics Pivot' transition, marred by declining automotive margins and regulatory friction in California. Short interest remains at historically low levels (2.23-2.69% of float), indicating that price action is driven by macro sentiment and institutional repositioning rather than squeeze mechanics.",
+                "KeyThesis": "Near-term consolidation or downside risk due to information diffusion of negative robotaxi regulatory news, offset by speculative attention shocks in AI/Optimus.",
+                "UncertaintyLevel": "Medium-High"
+            },
+            "Inputs": {
+                "ticker": "TSLA",
+                "date_range": "2026-01-27 to 2026-02-26",
+                "retrieved_at": "2026-02-26T16:56:03Z"
+            },
+            "Signals": {
+                "ShortInterest": { "SI_pct_float": 2.23, "Status": "Stable-Low" },
+                "News": { "SentimentScore": -0.42, "MajorTopic": "Regulatory Permitting" },
+                "WebSignals": { "AnomalyScore": 0.72 }
+            },
+            "EconomicValidation": {
+                "Findings": [
+                    { "Theory": "Short Squeeze", "Label": "Conflict", "Description": "Squeeze is statistically implausible given 1.02 days to cover." },
+                    { "Theory": "Information Diffusion", "Label": "Causal", "Description": "Reuters news led to 2.1% drop; prices absorbing friction." }
+                ]
+            },
+            "Scenarios": [
+                { "ScenarioName": "Baseline Replay", "FragilityScore": 10, "Impact": "Range-bound" },
+                { "ScenarioName": "Short Squeeze Catalyst", "FragilityScore": 85, "Impact": "15-20% Gap Up" },
+                { "ScenarioName": "Negative News Cascade", "FragilityScore": 70, "Impact": "Floor Breakthrough" },
+                { "ScenarioName": "Attention Spike", "FragilityScore": 90, "Impact": "Pump & Dump" },
+                { "ScenarioName": "SI Unwind", "FragilityScore": 25, "Impact": "Slow Grind" },
+                { "ScenarioName": "Conflict Regime", "FragilityScore": 95, "Impact": "Extreme Whipsaw" }
+            ],
+            "DashboardMetrics": {
+                "AnomalyCount": 3,
+                "SqueezeRiskLevel": "Low",
+                "CompositeRiskScore": 62
+            },
+            "ScenarioComparison": { "OverallRobustnessScore": 58 }
+        };
+
+        document.getElementById('summary-text').innerText = data.Summary.Overview;
+        document.getElementById('composite-risk').innerText = data.DashboardMetrics.CompositeRiskScore + '%';
+        document.getElementById('robustness').innerText = data.ScenarioComparison.OverallRobustnessScore + '%';
+        document.getElementById('anomaly-count').innerText = data.DashboardMetrics.AnomalyCount;
+        document.getElementById('squeeze-risk').innerText = data.DashboardMetrics.SqueezeRiskLevel;
+        document.getElementById('risk-progress').style.width = data.DashboardMetrics.CompositeRiskScore + '%';
+        document.getElementById('json-feed').innerText = JSON.stringify(data, null, 2);
+
+        const scenariosContainer = document.getElementById('scenarios-container');
+        data.Scenarios.forEach(s => {
+            const div = document.createElement('div');
+            div.className = 'card span-4';
+            div.style.background = 'rgba(255,255,255,0.03)';
+            div.innerHTML = `
+                <div class="scenario-name">${s.ScenarioName}</div>
+                <div class="scenario-meta">Fragility: ${s.FragilityScore} | Impact: ${s.Impact || 'N/A'}</div>
+                <div class="progress-bar"><div class="progress-fill" style="width: ${s.FragilityScore}%; background: ${s.FragilityScore > 70 ? '#ef4444' : '#10b981'}"></div></div>
+            `;
+            scenariosContainer.appendChild(div);
+        });
+
+        const validationList = document.getElementById('validation-list');
+        data.EconomicValidation.Findings.forEach(f => {
+            const div = document.createElement('div');
+            div.className = 'scenario-item';
+            div.innerHTML = `
+                <div class="scenario-name">${f.Theory} [${f.Label}]</div>
+                <div class="scenario-meta">${f.Description}</div>
+            `;
+            validationList.appendChild(div);
+        });
+    </script>
+</body>
+
+</html>

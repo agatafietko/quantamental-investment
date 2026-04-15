@@ -1,0 +1,14 @@
+{
+    "AFRM": [
+        { "time": "08:14 EST", "headline": "Buy Now, Pay Later margins squeeze under regulatory scrutiny", "sentiment": "Bearish" },
+        { "time": "Yesterday", "headline": "Retail traders target Fintech for aggressive short covering", "sentiment": "Bullish" }
+    ],
+    "TSLA": [
+        { "time": "09:30 EST", "headline": "Delivery forecasts adjusted downward due to logistical snags", "sentiment": "Bearish" },
+        { "time": "Yesterday", "headline": "Retail sentiment spikes on heavily shorted automobile stocks", "sentiment": "Bullish" }
+    ],
+    "SQ": [
+        { "time": "11:00 EST", "headline": "CashApp user base stagnation prompts downgrade", "sentiment": "Bearish" },
+        { "time": "Yesterday", "headline": "Options chain indicates massive gamma build-up at $80 strike", "sentiment": "Bullish" }
+    ]
+}

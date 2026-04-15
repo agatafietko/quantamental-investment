@@ -1,0 +1,107 @@
+[
+  {
+    "Ticker": "AFRM",
+    "Date": "8/31/21",
+    "Squeeze Score": 97.5,
+    "Short Interest %": 0.0815,
+    "Crowded Score": 37.5
+  },
+  {
+    "Ticker": "AFRM",
+    "Date": "9/2/21",
+    "Squeeze Score": 95.0,
+    "Short Interest %": 0.0819,
+    "Crowded Score": 35.0
+  },
+  {
+    "Ticker": "AFRM",
+    "Date": "9/1/21",
+    "Squeeze Score": 95.0,
+    "Short Interest %": 0.081,
+    "Crowded Score": 35.0
+  },
+  {
+    "Ticker": "SQ",
+    "Date": "7/26/21",
+    "Squeeze Score": 80.0,
+    "Short Interest %": 0.0835,
+    "Crowded Score": 50.0
+  },
+  {
+    "Ticker": "SQ",
+    "Date": "2/16/21",
+    "Squeeze Score": 77.5,
+    "Short Interest %": 0.0849,
+    "Crowded Score": 47.5
+  },
+  {
+    "Ticker": "SQ",
+    "Date": "2/12/21",
+    "Squeeze Score": 77.5,
+    "Short Interest %": 0.0848,
+    "Crowded Score": 47.5
+  },
+  {
+    "Ticker": "PYPL",
+    "Date": "2/12/21",
+    "Squeeze Score": 55.0,
+    "Short Interest %": 0.0116,
+    "Crowded Score": 25.0
+  },
+  {
+    "Ticker": "PYPL",
+    "Date": "2/11/21",
+    "Squeeze Score": 55.0,
+    "Short Interest %": 0.012,
+    "Crowded Score": 25.0
+  },
+  {
+    "Ticker": "PYPL",
+    "Date": "2/10/21",
+    "Squeeze Score": 55.0,
+    "Short Interest %": 0.0121,
+    "Crowded Score": 25.0
+  },
+  {
+    "Ticker": "SHOP",
+    "Date": "6/18/21",
+    "Squeeze Score": 65.0,
+    "Short Interest %": 0.0154,
+    "Crowded Score": 25.0
+  },
+  {
+    "Ticker": "SHOP",
+    "Date": "6/21/21",
+    "Squeeze Score": 65.0,
+    "Short Interest %": 0.0153,
+    "Crowded Score": 25.0
+  },
+  {
+    "Ticker": "SHOP",
+    "Date": "6/17/21",
+    "Squeeze Score": 55.0,
+    "Short Interest %": 0.0154,
+    "Crowded Score": 25.0
+  },
+  {
+    "Ticker": "TSLA",
+    "Date": "1/11/21",
+    "Squeeze Score": 82.5,
+    "Short Interest %": 0.0765,
+    "Crowded Score": 42.5
+  },
+  {
+    "Ticker": "TSLA",
+    "Date": "11/2/21",
+    "Squeeze Score": 82.5,
+    "Short Interest %": 0.0341,
+    "Crowded Score": 32.5
+  },
+  {
+    "Ticker": "TSLA",
+    "Date": "1/13/21",
+    "Squeeze Score": 77.5,
+    "Short Interest %": 0.0748,
+    "Crowded Score": 37.5
+  }
+]
