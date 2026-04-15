@@ -4,3 +4,4 @@ __pycache__/
 *.dmg
 node_modules/
 .env
+github_token.txt

@@ -92,9 +92,13 @@ app.get('/api/debate', (req, res) => {
         const mostRetail = latestValues.sort((a,b) => b.RetailSentiment - a.RetailSentiment)[0];
         
         const debateSequence = [
+            { agent: "GOVERNOR", text: `Initiating real-time alpha consensus for highly shorted metrics. Polling Sentiment Pod...` },
             { agent: "SENTIMENT POD (VADER)", text: `Newsflow detects structural weaknesses. Retail chatter heavily skewing on ${mostRetail.ticker} given recent ${(mostRetail.NewsSentiment < 0.3) ? 'bearish constraints' : 'bullish divergence'}.` },
+            { agent: "GOVERNOR", text: `Acknowledged. Correlating sentiment dislocations with quantitative squeeze risk variables.` },
             { agent: "SHORT-INTEREST ORACLE", text: `Alert: ${mostShorted.ticker} short float stands at ${(mostShorted.ShortInterestPct * 100).toFixed(1)}%. Risk of rapid unwinding identified due to elevated squeeze probability.` },
+            { agent: "GOVERNOR", text: `Squeeze probability flagged as elevated. Requesting final verification from Mirror Pod for institutional conviction and crowding density.` },
             { agent: "MIRROR POD (13F LOGIC)", text: `Correlating institutional flow metrics. We are seeing mathematical crowding scores exceeding ${mostShorted.CrowdedScore} on target ${mostShorted.ticker}. Structural vulnerability highly aligned.` },
+            { agent: "GOVERNOR", text: `Consensus achieved across all three intelligence vectors.` }
         ];
         
         res.json({
