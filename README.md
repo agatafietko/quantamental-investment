@@ -2,6 +2,13 @@
 
 An advanced, multi-agent algorithmic trading and sovereign fund management dashboard. This workspace contains the architecture for a fully integrated "Agentic War Room," real-time short-squeeze vulnerability scanners, and automated institutional 13F tracking logic.
 
+
+<img width="1388" height="585" alt="Screenshot 2026-04-15 at 7 34 28 PM" src="https://github.com/user-attachments/assets/44263b0a-1da1-4788-b581-856ef4c5cd38" />
+<img width="1015" height="641" alt="Screenshot 2026-04-15 at 7 35 01 PM" src="https://github.com/user-attachments/assets/84cf4029-c21a-4458-b410-02ef22295f34" />
+<img width="1407" height="681" alt="Screenshot 2026-04-15 at 7 35 18 PM" src="https://github.com/user-attachments/assets/a185c01e-4080-4d77-aa37-e11e09f98a10" />
+
+
+
 ## 🌟 Architecture Overview
 
 The system is compartmentalized into discrete intelligence engines:
