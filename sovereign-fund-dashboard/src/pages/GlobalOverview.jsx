@@ -174,9 +174,9 @@ export default function GlobalOverview() {
         <div className="col-span-9 shrink-0 flex flex-col min-h-0">
           <h3 className="font-serif text-xl border-b border-gold inline-block pb-2 mb-6">Alpha Heatmap</h3>
           <Card className="bg-ivory border-t-[0.5pt] border-gold rounded-none">
-            <CardContent className="p-0">
-              <table className="w-full text-left">
-                <thead>
+            <CardContent className="p-0 h-[320px] overflow-y-auto custom-scrollbar">
+              <table className="w-full text-left relative">
+                <thead className="sticky top-0 bg-ivory z-10 shadow-sm">
                   <tr className="border-b border-outline-variant/20">
                     <th className="font-sans font-normal text-[0.6rem] uppercase tracking-widest text-ink/50 py-4 px-6">Entity</th>
                     <th className="font-sans font-normal text-[0.6rem] uppercase tracking-widest text-ink/50 py-4 px-6 text-center">SI %</th>
@@ -186,7 +186,7 @@ export default function GlobalOverview() {
                   </tr>
                 </thead>
                 <tbody>
-                  {heatmap.slice(0, 4).map((row) => (
+                  {heatmap.slice(0, 20).map((row) => (
                     <tr 
                       key={row.ticker} 
                       className="border-b border-outline-variant/10 cursor-pointer hover:bg-gold/10 transition-colors" 
